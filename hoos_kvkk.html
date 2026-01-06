@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOOS Kalça Skoru Hesaplayıcı</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f8f9fa;
+            color: #212529;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 25px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        h1, h2 {
+            color: #0056b3;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.5em;
+            margin-top: 30px;
+        }
+        h3 {
+            font-size: 1.2em;
+            color: #343a40;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        .section {
+            margin-bottom: 25px;
+            background-color: #fdfdfd;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #495057;
+        }
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box; 
+        }
+        
+        .question-group {
+            margin-bottom: 20px;
+        }
+        .question {
+            font-weight: bold;
+            color: #343a40;
+            margin-bottom: 10px;
+        }
+        .option {
+            margin-bottom: 10px;
+            cursor: pointer;
+            padding-left: 5px;
+        }
+        .option input[type="radio"] {
+            margin-right: 10px;
+        }
+        .option label {
+            cursor: pointer;
+        }
+        .note {
+            font-size: 0.9em;
+            color: #6c757d;
+            background-color: #f1f3f5;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 3px solid #0056b3;
+            margin-bottom: 15px;
+        }
+
+        /* KVKK KUTUSU */
+        .kvkk-kapsayici {
+            margin-top: 25px;
+            margin-bottom: 15px;
+            border: 2px solid #0056b3;
+            border-radius: 10px;
+            padding: 10px;
+            background: #f8faff;
+        }
+        .kvkk-baslik {
+            font-weight: bold;
+            color: #0056b3;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        .kvkk-metin {
+            max-height: 180px;
+            overflow-y: auto;
+            font-size: 0.8em;
+            padding: 10px;
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid #d0e3ff;
+        }
+        .kvkk-uyari {
+            font-size: 0.8em;
+            color: #b02a37;
+            margin-top: 6px;
+        }
+        .okundu-etiket {
+            font-size: 0.75em;
+            color: #198754;
+            display: none;
+            margin-top: 4px;
+        }
+
+        /* ONAY KUTUSU */
+        .onam-cercevesi { 
+            background: #fff9db; 
+            border: 2px solid #fab005; 
+            padding: 20px; 
+            border-radius: 12px; 
+            margin: 15px 0 30px 0; 
+        }
+        .onam-baslik { 
+            font-weight: bold; 
+            color: #856404; 
+            display: block; 
+            margin-bottom: 10px; 
+        }
+        
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        #calculateButton {
+            background-color: #007bff;
+        }
+        #calculateButton:hover {
+            background-color: #0056b3;
+        }
+        
+        #sendToDoctorButton {
+            background-color: #6c757d;
+            margin-top: 15px;
+            display: none;
+            cursor: not-allowed;
+        }
+        #sendToDoctorButton.active {
+            background-color: #25D366;
+            cursor: pointer;
+        }
+        #sendToDoctorButton.active:hover {
+            background-color: #128C7E;
+        }
+        
+        #results {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e6f7ff;
+            border: 1px solid #b3e0ff;
+            border-radius: 5px;
+            text-align: left;
+            display: none;
+        }
+        #results h2 {
+            margin-top: 0;
+            text-align: center;
+            font-size: 1.8em;
+        }
+        #results p {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #004085;
+            border-bottom: 1px solid #b3e0ff;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>HOOS Kalça Skoru Hesaplayıcı</h1>
+        <p class="note">Aşağıdaki sorular, son bir hafta içinde kalçanızla ilgili yaşadığınız sorunlarla ilgilidir. Lütfen her soruya en uygun tek cevabı işaretleyin.</p>
+
+        <form id="hoosForm" onsubmit="return false;">
+
+            <div class="section">
+                <h2>Hasta Bilgileri</h2>
+                <div class="form-group">
+                    <label for="hasta_adi">Adınız:</label>
+                    <input type="text" id="hasta_adi" name="hasta_adi" required>
+                </div>
+                <div class="form-group">
+                    <label for="hasta_soyadi">Soyadınız:</label>
+                    <input type="text" id="hasta_soyadi" name="hasta_soyadi" required>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>S1: Semptomlar</h2>
+                
+                <div class="question-group">
+                    <div class="question">S1. Kalçanız ne sıklıkla şişiyor?</div>
+                    <div class="option"><label><input type="radio" name="s1" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="s1" value="1"> Ayda bir</label></div>
+                    <div class="option"><label><input type="radio" name="s1" value="2"> Haftada bir</label></div>
+                    <div class="option"><label><input type="radio" name="s1" value="3"> Günde bir</label></div>
+                    <div class="option"><label><input type="radio" name="s1" value="4"> Her zaman</label></div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question">S2. Kalçanızdan gıcırtı veya 'tık' sesi geliyor mu?</div>
+                    <div class="option"><label><input type="radio" name="s2" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="s2" value="1"> Nadiren</label></div>
+                    <div class="option"><label><input type="radio" name="s2" value="2"> Bazen</label></div>
+                    <div class="option"><label><input type="radio" name="s2" value="3"> Sık sık</label></div>
+                    <div class="option"><label><input type="radio" name="s2" value="4"> Her zaman</label></div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question">S3. Sabah kalktığınızda kalçanızda sertlik oluyor mu?</div>
+                    <div class="option"><label><input type="radio" name="s3" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="s3" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="s3" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="s3" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="s3" value="4"> Aşırı</label></div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question">S4. Gün içinde (istirahat sonrası) kalçanızda sertlik oluyor mu?</div>
+                    <div class="option"><label><input type="radio" name="s4" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="s4" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="s4" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="s4" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="s4" value="4"> Aşırı</label></div>
+                </div>
+                
+                <div class="question-group">
+                    <div class="question">S5. Kalçanızda hareket kısıtlılığı hissediyor musunuz?</div>
+                    <div class="option"><label><input type="radio" name="s5" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="s5" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="s5" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="s5" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="s5" value="4"> Aşırı</label></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>S2: Ağrı</h2>
+                <p class="note">Aşağıdaki aktiviteler sırasında ne kadar kalça ağrınız olduğunu belirtiniz.</p>
+
+                <div class="question-group">
+                    <div class="question">P1. Kalçanızı tam olarak bükerken (örn. dizinizi göğsünüze çekerken)</div>
+                    <div class="option"><label><input type="radio" name="p1" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="p1" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="p1" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="p1" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="p1" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">P2. Düz zeminde yürürken</div>
+                    <div class="option"><label><input type="radio" name="p2" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="p2" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="p2" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="p2" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="p2" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">P3. Merdiven inip çıkarken</div>
+                    <div class="option"><label><input type="radio" name="p3" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="p3" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="p3" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="p3" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="p3" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">P4. Gece yatakta yatarken (kalçanızın pozisyonuna bağlı olarak)</div>
+                    <div class="option"><label><input type="radio" name="p4" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="p4" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="p4" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="p4" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="p4" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">P5. Sandalyede otururken</div>
+                    <div class="option"><label><input type="radio" name="p5" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="p5" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="p5" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="p5" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="p5" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">P6. Ayakta dikilirken</div>
+                    <div class="option"><label><input type="radio" name="p6" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="p6" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="p6" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="p6" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="p6" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">P7. Kalçanızı bükerek (örn. ayakkabı giyerken)</div>
+                    <div class="option"><label><input type="radio" name="p7" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="p7" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="p7" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="p7" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="p7" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">P8. Yatakta dönerken</div>
+                    <div class="option"><label><input type="radio" name="p8" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="p8" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="p8" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="p8" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="p8" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">P9. Kalçanızın üzerine ağırlık verirken</div>
+                    <div class="option"><label><input type="radio" name="p9" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="p9" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="p9" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="p9" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="p9" value="4"> Aşırı</label></div>
+                </div>
+                 <div class="question-group">
+                    <div class="question">P10. Genel olarak kalça ağrınız ne düzeyde?</div>
+                    <div class="option"><label><input type="radio" name="p10" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="p10" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="p10" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="p10" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="p10" value="4"> Aşırı</label></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>S3: Günlük Yaşam Aktiviteleri (ADL)</h2>
+                <p class="note">Aşağıdaki günlük aktiviteler sırasında kalça sorununuz nedeniyle ne kadar zorlandığınızı belirtiniz.</p>
+
+                <div class="question-group">
+                    <div class="question">A1. Merdiven inmek</div>
+                    <div class="option"><label><input type="radio" name="a1" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="a1" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="a1" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="a1" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="a1" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">A2. Merdiven çıkmak</div>
+                    <div class="option"><label><input type="radio" name="a2" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="a2" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="a2" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="a2" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="a2" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">A3. Sandalyeden kalkmak</div>
+                    <div class="option"><label><input type="radio" name="a3" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="a3" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="a3" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="a3" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="a3" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">A4. Ayakta durmak</div>
+                    <div class="option"><label><input type="radio" name="a4" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="a4" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="a4" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="a4" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="a4" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">A5. Yatakta yatmak (ağrı, sertlik, rahatsızlık)</div>
+                    <div class="option"><label><input type="radio" name="a5" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="a5" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="a5" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="a5" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="a5" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">A6. Arabadan inmek / arabaya binmek</div>
+                    <div class="option"><label><input type="radio" name="a6" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="a6" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="a6" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="a6" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="a6" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">A7. Alışveriş yapmak</div>
+                    <div class="option"><label><input type="radio" name="a7" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="a7" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="a7" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="a7" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="a7" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">A8. Çorap giymek / çıkarmak</div>
+                    <div class="option"><label><input type="radio" name="a8" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="a8" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="a8" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="a8" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="a8" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">A9. Yataktan kalkmak</div>
+                    <div class="option"><label><input type="radio" name="a9" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="a9" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="a9" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="a9" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="a9" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">A10. Ayakkabı giymek / çıkarmak</div>
+                    <div class="option"><label><input type="radio" name="a10" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="a10" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="a10" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="a10" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="a10" value="4"> Aşırı</label></div>
+                </div>
+                 <div class="question-group">
+                    <div class="question">A11. Ev işleri (yer silme, cam silme vb.)</div>
+                    <div class="option"><label><input type="radio" name="a11" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="a11" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="a11" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="a11" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="a11" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">A12. Ağır ev işleri (yatak düzeltme, ağır çanta taşıma)</div>
+                    <div class="option"><label><input type="radio" name="a12" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="a12" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="a12" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="a12" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="a12" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">A13. Çömelmek</div>
+                    <div class="option"><label><input type="radio" name="a13" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="a13" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="a13" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="a13" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="a13" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">A14. Küvete girmek / çıkmak</div>
+                    <div class="option"><label><input type="radio" name="a14" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="a14" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="a14" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="a14" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="a14" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">A15. Tuvalete oturmak / kalkmak</div>
+                    <div class="option"><label><input type="radio" name="a15" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="a15" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="a15" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="a15" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="a15" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">A16. İlk kalkışta yürüme (sertlik/ağrı)</div>
+                    <div class="option"><label><input type="radio" name="a16" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="a16" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="a16" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="a16" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="a16" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">A17. Engebeli (bozuk) zeminde yürümek</div>
+                    <div class="option"><label><input type="radio" name="a17" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="a17" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="a17" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="a17" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="a17" value="4"> Aşırı</label></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>S4: Spor ve Rekreasyon (Sport/Rec)</h2>
+                <p class="note">Aşağıdaki aktiviteler sırasında kalça sorununuz nedeniyle ne kadar zorlandığınızı belirtiniz.</p>
+
+                <div class="question-group">
+                    <div class="question">SP1. Koşmak</div>
+                    <div class="option"><label><input type="radio" name="sp1" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="sp1" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="sp1" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="sp1" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="sp1" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">SP2. Ani duruş ve dönüş (pivot) yapmak</div>
+                    <div class="option"><label><input type="radio" name="sp2" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="sp2" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="sp2" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="sp2" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="sp2" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">SP3. Yana doğru (lateral) hareketler</div>
+                    <div class="option"><label><input type="radio" name="sp3" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="sp3" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="sp3" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="sp3" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="sp3" value="4"> Aşırı</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">SP4. Kalçanızda burkulma veya "boşalma" hissi</div>
+                    <div class="option"><label><input type="radio" name="sp4" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="sp4" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="sp4" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="sp4" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="sp4" value="4"> Aşırı</label></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>S5: Yaşam Kalitesi (QOL)</h2>
+                <p class="note">Bu sorular kalça sorununuzun yaşam kalitenizi nasıl etkilediği ile ilgilidir.</p>
+
+                <div class="question-group">
+                    <div class="question">Q1. Kalça sorununuzun farkında olma sıklığınız nedir?</div>
+                    <div class="option"><label><input type="radio" name="q1" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="q1" value="1"> Ayda bir</label></div>
+                    <div class="option"><label><input type="radio" name="q1" value="2"> Haftada bir</label></div>
+                    <div class="option"><label><input type="radio" name="q1" value="3"> Günde bir</label></div>
+                    <div class="option"><label><input type="radio" name="q1" value="4"> Sürekli</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">Q2. Kalça sorununuz nedeniyle yaşam tarzınızı ne derecede değiştirdiniz?</div>
+                    <div class="option"><label><input type="radio" name="q2" value="0"> Hiç değiştirme</label></div>
+                    <div class="option"><label><input type="radio" name="q2" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="q2" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="q2" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="q2" value="4"> Tamamen</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">Q3. Kalça sorununuz varken ne kadar sık kalçanıza güvenebiliyorsunuz?</div>
+                    <div class="option"><label><input type="radio" name="q3" value="0"> Her zaman</label></div>
+                    <div class="option"><label><input type="radio" name="q3" value="1"> Genellikle</label></div>
+                    <div class="option"><label><input type="radio" name="q3" value="2"> Bazen</label></div>
+                    <div class="option"><label><input type="radio" name="q3" value="3"> Nadiren</label></div>
+                    <div class="option"><label><input type="radio" name="q3" value="4"> Hiçbir zaman</label></div>
+                </div>
+                <div class="question-group">
+                    <div class="question">Q4. Genel olarak, kalça sorununuz sizi ne düzeyde etkiliyor?</div>
+                    <div class="option"><label><input type="radio" name="q4" value="0"> Hiç</label></div>
+                    <div class="option"><label><input type="radio" name="q4" value="1"> Hafif</label></div>
+                    <div class="option"><label><input type="radio" name="q4" value="2"> Orta</label></div>
+                    <div class="option"><label><input type="radio" name="q4" value="3"> Şiddetli</label></div>
+                    <div class="option"><label><input type="radio" name="q4" value="4"> Aşırı</label></div>
+                </div>
+            </div>
+
+            <!-- KVKK METNİ -->
+            <div class="kvkk-kapsayici">
+                <div class="kvkk-baslik">Kişisel Verileriniz Hakkında Bilgilendirme (KVKK)</div>
+                <div id="kvkkMetni" class="kvkk-metin">
+                    <p><strong>Veri Sorumlusu:</strong> Op. Dr. İsmail Duran, Kartal Şehir Hastanesi Ortopedi Birimi, İstanbul. İletişim: +90 854 304 94 35, e‑posta: ismailduran33@gmail.com</p>
+                    <p>Bu formda paylaştığınız bilgiler, kalça sağlığınızın değerlendirilmesi, tedavi sürecinizin planlanması ve sonuçların takibi amacıyla kullanılacaktır. Verdiğiniz yanıtlar, ortopedik skorlamalar (örneğin semptomlar, ağrı, günlük aktiviteler, spor kapasitesi, yaşam kalitesi) üzerinden durumunuzun objektif olarak değerlendirilmesini sağlar.</p>
+                    <p>Ad‑soyad, yaş, cinsiyet, telefon gibi kimlik ve iletişim bilgileriniz, sadece sizinle iletişim kurmak ve sonuçlarınızı doktorunuza iletmek için kullanılacaktır. Bilimsel çalışma ve istatistiksel analiz aşamasında bu kimlik ve iletişim bilgileriniz verisetinden ayrılacak, kimliğiniz belirlenemeyecek şekilde "anonim" hale getirilecektir. Bilimsel makale, sunum veya istatistiklerde adınız, telefon numaranız veya sizi doğrudan tanımlayan bilgiler kullanılmayacaktır.</p>
+                    <p>Bu formun bağlantısı, tercihen WhatsApp üzerinden size gönderilebilir. WhatsApp, yurt dışında hizmet veren bir uygulamadır ve mesajlaşma sırasında telefon numaranız bu hizmet kapsamında işlenebilir. İsterseniz bağlantının WhatsApp yerine SMS veya e‑posta gibi farklı yollarla gönderilmesini talep edebilirsiniz.</p>
+                    <p>Verileriniz, sağlık mevzuatında öngörülen süreler boyunca saklanacak; bu sürelerin sonunda mevzuata uygun şekilde silinecek, yok edilecek veya anonim hale getirilecektir. Verilerinizin güvenliği için yetkisiz erişimi engelleyecek teknik ve idari tedbirler alınmaktadır.</p>
+                    <p>6698 sayılı KVKK uyarınca; verilerinizin işlenip işlenmediğini öğrenme, işlenmişse bunlara erişme, düzeltilmesini veya silinmesini talep etme, işleme faaliyetlerine itiraz etme ve kanuna aykırı işlenmesi nedeniyle zarara uğrarsanız zararın giderilmesini isteme haklarına sahipsiniz. Bu haklar için "KVKK Kapsamında Bilgi Talebi" başlığı ile ismailduran33@gmail.com adresine e‑posta gönderebilirsiniz.</p>
+                </div>
+                <div id="kvkkOkunduEtiket" class="okundu-etiket">
+                    Aydınlatma metni okundu.
+                </div>
+                <div id="kvkkUyari" class="kvkk-uyari">
+                    Lütfen metni aşağıya kadar kaydırarak okuyunuz; onay kutusu ancak bundan sonra etkinleşecektir.
+                </div>
+            </div>
+
+            <div class="onam-cercevesi">
+                <span class="onam-baslik">Veri Kullanım ve Araştırma Onayı</span>
+                <p style="font-size: 0.85em; color: #555; margin-bottom: 15px;">
+                    Aşağıdaki kutuyu işaretleyerek, bu formda verdiğiniz bilgilerin kalça sağlığınızın değerlendirilmesi ve kimliğiniz gizlenerek (anonimleştirilmiş şekilde) bilimsel çalışmalar kapsamında kullanılmasına, ayrıca form bağlantısının WhatsApp üzerinden size gönderilmesine onay vermiş olursunuz.
+                </p>
+                <label style="font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="onayKutusu" style="width: 22px; height: 22px;" disabled> 
+                    Aydınlatma metnini okudum; bilgilerimin bu amaçlarla kullanılmasını onaylıyorum.
+                </label>
+            </div>
+
+            <button type="button" id="calculateButton" onclick="calculateHOOS()">PUANLARI HESAPLA</button>
+
+            <div id="results">
+                <h2>HOOS Alt Skorları (0-100)</h2>
+                <p class="note">100 = Sorun Yok (En İyi), 0 = Aşırı Sorun (En Kötü)</p>
+                <p id="scoreSymptoms">Semptomlar: -</p>
+                <p id="scorePain">Ağrı: -</p>
+                <p id="scoreADL">Günlük Yaşam Aktiviteleri (ADL): -</p>
+                <p id="scoreSportRec">Spor ve Rekreasyon: -</p>
+                <p id="scoreQOL">Yaşam Kalitesi: -</p>
+                
+                <button type="button" id="sendToDoctorButton" onclick="sendResultsToDoctor()">
+                    Sonuçları Doktoruma WhatsApp ile Gönder
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const phoneFromURL = params.get('phone');
+        const DOKTORUN_TELEFON_NUMARASI = phoneFromURL;
+
+        let finalScores = {
+            symptoms: 0,
+            pain: 0,
+            adl: 0,
+            sportRec: 0,
+            qol: 0
+        };
+
+        const kvkkMetni = document.getElementById('kvkkMetni');
+        const kvkkOkunduEtiket = document.getElementById('kvkkOkunduEtiket');
+        const kvkkUyari = document.getElementById('kvkkUyari');
+        const onayKutusu = document.getElementById('onayKutusu');
+        const gonderBtn = document.getElementById('sendToDoctorButton');
+
+        let kvkkOkundu = false;
+
+        // KVKK scroll kontrolü
+        kvkkMetni.addEventListener('scroll', function () {
+            const scrollTop = kvkkMetni.scrollTop;
+            const scrollHeight = kvkkMetni.scrollHeight;
+            const clientHeight = kvkkMetni.clientHeight;
+
+            if (!kvkkOkundu && scrollTop + clientHeight >= scrollHeight - 5) {
+                kvkkOkundu = true;
+                onayKutusu.disabled = false;
+                kvkkOkunduEtiket.style.display = 'block';
+                kvkkUyari.style.display = 'none';
+            }
+        });
+
+        // Onay kutusu değişimi
+        onayKutusu.addEventListener('change', function() {
+            if (this.checked) {
+                gonderBtn.classList.add('active');
+            } else {
+                gonderBtn.classList.remove('active');
+            }
+        });
+
+        function calculateHOOS() {
+            const form = document.getElementById('hoosForm');
+            let missingQuestions = false;
+
+            function getRadioValue(name) {
+                const radios = form.elements[name];
+                if (!radios) return -1;
+                for (let i = 0; i < radios.length; i++) {
+                    if (radios[i].checked) {
+                        return parseInt(radios[i].value, 10);
+                    }
+                }
+                return -1;
+            }
+
+            let sums = { symptoms: 0, pain: 0, adl: 0, sportRec: 0, qol: 0 };
+            
+            for (let i = 1; i <= 5; i++) {
+                let val = getRadioValue('s' + i);
+                if (val === -1) { missingQuestions = true; } else { sums.symptoms += val; }
+            }
+
+            for (let i = 1; i <= 10; i++) {
+                let val = getRadioValue('p' + i);
+                if (val === -1) { missingQuestions = true; } else { sums.pain += val; }
+            }
+
+            for (let i = 1; i <= 17; i++) {
+                let val = getRadioValue('a' + i);
+                if (val === -1) { missingQuestions = true; } else { sums.adl += val; }
+            }
+
+            for (let i = 1; i <= 4; i++) {
+                let val = getRadioValue('sp' + i);
+                if (val === -1) { missingQuestions = true; } else { sums.sportRec += val; }
+            }
+
+            for (let i = 1; i <= 4; i++) {
+                let val = getRadioValue('q' + i);
+                if (val === -1) { missingQuestions = true; } else { sums.qol += val; }
+            }
+
+            if (missingQuestions) {
+                alert("Lütfen tüm 40 soruyu cevapladığınızdan emin olun.");
+                return;
+            }
+
+            finalScores.symptoms = Math.round(100 - ((sums.symptoms * 100) / 20));
+            finalScores.pain = Math.round(100 - ((sums.pain * 100) / 40));
+            finalScores.adl = Math.round(100 - ((sums.adl * 100) / 68));
+            finalScores.sportRec = Math.round(100 - ((sums.sportRec * 100) / 16));
+            finalScores.qol = Math.round(100 - ((sums.qol * 100) / 16));
+
+            const resultsDiv = document.getElementById('results');
+            document.getElementById('scoreSymptoms').innerText = `Semptomlar: ${finalScores.symptoms} / 100`;
+            document.getElementById('scorePain').innerText = `Ağrı: ${finalScores.pain} / 100`;
+            document.getElementById('scoreADL').innerText = `Günlük Yaşam Aktiviteleri (ADL): ${finalScores.adl} / 100`;
+            document.getElementById('scoreSportRec').innerText = `Spor ve Rekreasyon: ${finalScores.sportRec} / 100`;
+            document.getElementById('scoreQOL').innerText = `Yaşam Kalitesi: ${finalScores.qol} / 100`;
+            
+            resultsDiv.style.display = 'block';
+            gonderBtn.style.display = 'block';
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function getSelectedAnswerText(name) {
+            const form = document.getElementById('hoosForm');
+            const radios = form.elements[name];
+            if (!radios) return "Soru bulunamadı";
+            
+            for (let i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    return radios[i].parentElement.innerText.trim(); 
+                }
+            }
+            return "Cevaplanmadı";
+        }
+
+        function sendResultsToDoctor() {
+            if (!DOKTORUN_TELEFON_NUMARASI || DOKTORUN_TELEFON_NUMARASI.length < 12) {
+                alert("Form sahibi (doktor) kendi telefon numarasını koda eklememiş.");
+                return;
+            }
+
+            if (!onayKutusu.checked) {
+                alert("Lütfen önce aydınlatma metnini okuyup onay veriniz.");
+                return;
+            }
+
+            const form = document.getElementById('hoosForm');
+            const hastaAdi = form.elements['hasta_adi'].value;
+            const hastaSoyadi = form.elements['hasta_soyadi'].value;
+            
+            if (!hastaAdi || !hastaSoyadi) {
+                alert("Lütfen sonuçları göndermeden önce Ad ve Soyad alanlarını doldurun.");
+                return;
+            }
+
+            let message = `--- HOOS Kalça Skoru Sonucu ---\n\n`;
+            message += `Hasta Adı: *${hastaAdi} ${hastaSoyadi}*\n\n`;
+            
+            message += `--- SKOR ÖZETİ (0-100, 100=En İyi) ---\n`;
+            message += `Semptomlar: *${finalScores.symptoms} / 100*\n`;
+            message += `Ağrı: *${finalScores.pain} / 100*\n`;
+            message += `Günlük Yaşam (ADL): *${finalScores.adl} / 100*\n`;
+            message += `Spor/Rekreasyon: *${finalScores.sportRec} / 100*\n`;
+            message += `Yaşam Kalitesi (QOL): *${finalScores.qol} / 100*\n\n`;
+            
+            message += `--- DETAYLI YANIT DÖKÜMÜ ---\n\n`;
+            message += `BÖLÜM S: Semptomlar\n`;
+            for(let i=1; i<=5; i++) { message += `S${i}: ${getSelectedAnswerText('s'+i)}\n`; }
+            message += `\nBÖLÜM P: Ağrı\n`;
+            for(let i=1; i<=10; i++) { message += `P${i}: ${getSelectedAnswerText('p'+i)}\n`; }
+            message += `\nBÖLÜM A: Günlük Yaşam (ADL)\n`;
+            for(let i=1; i<=17; i++) { message += `A${i}: ${getSelectedAnswerText('a'+i)}\n`; }
+            message += `\nBÖLÜM SP: Spor ve Rekreasyon\n`;
+            for(let i=1; i<=4; i++) { message += `SP${i}: ${getSelectedAnswerText('sp'+i)}\n`; }
+            message += `\nBÖLÜM Q: Yaşam Kalitesi\n`;
+            for(let i=1; i<=4; i++) { message += `Q${i}: ${getSelectedAnswerText('q'+i)}\n`; }
+            
+            message += `\n(Bu mesaj, aydınlatma metni okunup bilimsel ve klinik kullanım için onam verilerek gönderilmiştir.)`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappURL = `https://wa.me/${DOKTORUN_TELEFON_NUMARASI}?text=${encodedMessage}`;
+            
+            window.open(whatsappURL, '_blank');
+        }
+    </script>
+
+</body>
+</html>
