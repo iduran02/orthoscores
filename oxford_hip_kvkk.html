@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasta Ön Değerlendirme</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; background-color: #f8f9fa; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 650px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        h1 { color: #0056b3; text-align: center; font-size: 1.5em; margin-bottom: 20px; }
+        h2 { color: #495057; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; margin-top: 30px; font-size: 1.1em; font-weight: 600; }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; color: #555; font-size: 0.95em; }
+        input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 6px; font-size: 16px; box-sizing: border-box; font-family: inherit; }
+        textarea { resize: vertical; height: 80px; }
+
+        .row { display: flex; gap: 15px; }
+        .col { flex: 1; }
+
+        .radio-options { display: flex; flex-direction: column; gap: 10px; }
+        .radio-label { display: flex; align-items: center; background: #f8f9fa; border: 1px solid #dee2e6; padding: 10px; border-radius: 8px; cursor: pointer; }
+        .radio-label:hover { background-color: #e9ecef; }
+        .radio-label input { margin-right: 10px; transform: scale(1.2); }
+
+        .checkbox-wrapper { margin-bottom: 12px; }
+        .main-check-label { display: flex; align-items: center; background: #fff; border: 1px solid #dee2e6; padding: 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-weight: 600; }
+        .main-check-label:hover { background-color: #f1f3f5; }
+        .main-check-label input { margin-right: 15px; transform: scale(1.3); }
+
+        .hidden-details { display: none; background-color: #f8f9fa; border: 1px solid #e9ecef; border-top: none; margin-top: -5px; margin-bottom: 15px; padding: 15px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
+        
+        .sub-option { display: inline-flex; align-items: center; margin-right: 15px; margin-bottom: 10px; cursor: pointer; font-size: 0.9em; }
+        .sub-option input { margin-right: 6px; transform: scale(1.1); }
+
+        /* KVKK KUTUSU */
+        .kvkk-kapsayici {
+            margin-top: 25px;
+            margin-bottom: 15px;
+            border: 2px solid #0056b3;
+            border-radius: 10px;
+            padding: 10px;
+            background: #f8faff;
+        }
+        .kvkk-baslik {
+            font-weight: bold;
+            color: #0056b3;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        .kvkk-metin {
+            max-height: 180px;
+            overflow-y: auto;
+            font-size: 0.8em;
+            padding: 10px;
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid #d0e3ff;
+        }
+        .kvkk-uyari {
+            font-size: 0.8em;
+            color: #b02a37;
+            margin-top: 6px;
+        }
+        .okundu-etiket {
+            font-size: 0.75em;
+            color: #198754;
+            display: none;
+            margin-top: 4px;
+        }
+
+        /* ONAY KUTUSU */
+        .onam-cercevesi { 
+            background: #fff9db; 
+            border: 2px solid #fab005; 
+            padding: 20px; 
+            border-radius: 12px; 
+            margin: 15px 0 30px 0; 
+        }
+        .onam-baslik { 
+            font-weight: bold; 
+            color: #856404; 
+            display: block; 
+            margin-bottom: 10px; 
+        }
+
+        button { 
+            display: block; 
+            width: 100%; 
+            padding: 16px; 
+            background-color: #6c757d; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 18px; 
+            font-weight: bold; 
+            cursor: not-allowed; 
+            margin-top: 30px; 
+        }
+        button.active {
+            background-color: #25D366;
+            cursor: pointer;
+        }
+        button.active:hover { 
+            background-color: #128C7E; 
+        }
+        
+        .info-note { font-size: 0.85em; color: #6c757d; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Hasta Bilgi Formu</h1>
+    
+    <h2>Kişisel Bilgiler</h2>
+    <div class="row">
+        <div class="col"><label>Yaş:</label><input type="number" id="age" placeholder="Örn: 55"></div>
+        <div class="col"><label>Cinsiyet:</label><select id="gender"><option value="K">Kadın</option><option value="E">Erkek</option></select></div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col"><label>Boy (cm):</label><input type="number" id="height" placeholder="170"></div>
+        <div class="col"><label>Kilo (kg):</label><input type="number" id="weight" placeholder="75"></div>
+    </div>
+    <br>
+    <div class="form-group">
+        <label>Kan Grubu:</label>
+        <select id="blood_type">
+            <option value="">Seçiniz...</option>
+            <option value="A Rh(+)">A Rh(+)</option>
+            <option value="A Rh(-)">A Rh(-)</option>
+            <option value="B Rh(+)">B Rh(+)</option>
+            <option value="B Rh(-)">B Rh(-)</option>
+            <option value="AB Rh(+)">AB Rh(+)</option>
+            <option value="AB Rh(-)">AB Rh(-)</option>
+            <option value="0 Rh(+)">0 Rh(+)</option>
+            <option value="0 Rh(-)">0 Rh(-)</option>
+            <option value="Bilmiyorum">Bilmiyorum</option>
+        </select>
+    </div>
+
+    <h2>Alışkanlıklar</h2>
+    
+    <div class="form-group">
+        <label>Sigara Kullanımı:</label>
+        <div class="radio-options">
+            <label class="radio-label">
+                <input type="radio" name="smoking_status" value="never" onclick="handleSmoking('never')" checked> Hiç kullanmadım
+            </label>
+            <label class="radio-label">
+                <input type="radio" name="smoking_status" value="ex" onclick="handleSmoking('ex')"> <strong>Bıraktım</strong> (Eskiden içiyordum)
+            </label>
+            <label class="radio-label">
+                <input type="radio" name="smoking_status" value="active" onclick="handleSmoking('active')"> <strong>Kullanıyorum</strong> (Aktif)
+            </label>
+        </div>
+
+        <div id="box_ex_smoker" class="hidden-details" style="margin-top:10px; border-radius:8px; border:1px solid #ced4da;">
+            <label>Ne zaman bıraktınız?</label>
+            <input type="text" id="quit_time" placeholder="Örn: 2 yıl önce, 6 ay önce...">
+        </div>
+
+        <div id="box_active_smoker" class="hidden-details" style="margin-top:10px; border-radius:8px; border:1px solid #ced4da;">
+            <div class="row">
+                <div class="col"><label>Günde (adet):</label><input type="number" id="smoke_amount" placeholder="20"></div>
+                <div class="col"><label>Kaç yıldır:</label><input type="number" id="smoke_years" placeholder="10"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="alcohol">Alkol Kullanımı:</label>
+        <select id="alcohol">
+            <option value="Kullanmıyorum">Kullanmıyorum</option>
+            <option value="Sosyal">Sosyal (Ayda 1-2 kez)</option>
+            <option value="Haftada 1-2">Haftada 1-2 kez</option>
+            <option value="Her Gün">Her gün (Düzenli)</option>
+        </select>
+    </div>
+
+    <h2>Tıbbi Durum & İlaçlar</h2>
+
+    <div class="checkbox-wrapper">
+        <label class="main-check-label">
+            <input type="checkbox" id="check_meds" onchange="toggleBox('box_meds', this.checked)">
+            Düzenli kullandığım İLAÇLAR var
+        </label>
+        <div id="box_meds" class="hidden-details">
+            <label style="font-weight:normal; font-size:0.9em;">Lütfen ilaçları alt alta yazınız:</label>
+            <textarea id="meds_text" placeholder="Örn: Aspirin, Tansiyon ilacı..."></textarea>
+        </div>
+    </div>
+
+    <div class="checkbox-wrapper">
+        <label class="main-check-label">
+            <input type="checkbox" id="check_surg" onchange="toggleBox('box_surg', this.checked)">
+            Daha önce AMELİYAT oldum
+        </label>
+        <div id="box_surg" class="hidden-details">
+            <label style="font-weight:normal; font-size:0.9em;">Hangi ameliyatlar?</label>
+            <textarea id="surg_text" placeholder="Örn: Safra kesesi, Diz protezi..."></textarea>
+        </div>
+    </div>
+
+    <div class="checkbox-wrapper">
+        <label class="main-check-label">
+            <input type="checkbox" id="check_allergy" onchange="toggleBox('box_allergy', this.checked)">
+            ALERJİM var
+        </label>
+        <div id="box_allergy" class="hidden-details">
+            <div style="margin-bottom:10px;">
+                <label class="sub-option"><input type="checkbox" id="alg_drug"> İlaç</label>
+                <label class="sub-option"><input type="checkbox" id="alg_metal"> Metal</label>
+                <label class="sub-option"><input type="checkbox" id="alg_other"> Diğer</label>
+            </div>
+            <input type="text" id="allergy_detail" placeholder="Alerji detayı (Örn: Penisilin)">
+        </div>
+    </div>
+
+    <h2>Ek Hastalıklar</h2>
+    <p class="info-note">Tanısı konulmuş olanları işaretleyiniz:</p>
+    
+    <div style="display: grid; grid-template-columns: 1fr; gap:8px;">
+        <label class="main-check-label" style="padding:10px; font-weight:normal;"><input type="checkbox" class="cci-check" value="1" data-code="MI"> Kalp Yetmezliği / Kriz</label>
+        <label class="main-check-label" style="padding:10px; font-weight:normal;"><input type="checkbox" class="cci-check" value="1" data-code="KOAH"> KOAH / Astım</label>
+        <label class="main-check-label" style="padding:10px; font-weight:normal;"><input type="checkbox" class="cci-check" value="1" data-code="DM"> Şeker (Organ hasarı YOK)</label>
+        <label class="main-check-label" style="padding:10px; font-weight:normal;"><input type="checkbox" class="cci-check" value="2" data-code="DM+"> Şeker (Göz/Böbrek hasarlı)</label>
+        <label class="main-check-label" style="padding:10px; font-weight:normal;"><input type="checkbox" class="cci-check" value="2" data-code="Böbrek"> Böbrek Yetmezliği</label>
+        <label class="main-check-label" style="padding:10px; font-weight:normal;"><input type="checkbox" class="cci-check" value="1" data-code="İnme"> Felç / İnme</label>
+        <label class="main-check-label" style="padding:10px; font-weight:normal;"><input type="checkbox" class="cci-check" value="2" data-code="Kanser"> Kanser (Son 5 yıl)</label>
+    </div>
+
+    <!-- KVKK METNİ -->
+    <div class="kvkk-kapsayici">
+        <div class="kvkk-baslik">Kişisel Verileriniz Hakkında Bilgilendirme (KVKK)</div>
+        <div id="kvkkMetni" class="kvkk-metin">
+            <p><strong>Veri Sorumlusu:</strong> Op. Dr. İsmail Duran, Kartal Şehir Hastanesi Ortopedi Birimi, İstanbul. İletişim: +90 854 304 94 35, e‑posta: ismailduran33@gmail.com</p>
+            <p>Bu formda paylaştığınız bilgiler, sağlık durumunuzun değerlendirilmesi, tedavi sürecinizin planlanması ve sonuçların takibi amacıyla kullanılacaktır. Formda belirttiğiniz kişisel bilgiler (yaş, cinsiyet, boy, kilo), tıbbi geçmiş (hastalıklar, ameliyatlar, ilaçlar) ve alışkanlıklarınız (sigara, alkol) hekiminizin size en uygun tedaviyi sunabilmesi için gereklidir.</p>
+            <p>Ad‑soyad, yaş, cinsiyet, telefon gibi kimlik ve iletişim bilgileriniz, sadece sizinle iletişim kurmak ve tedavi bilgilerinizi doktorunuza iletmek için kullanılacaktır. Bilimsel çalışma ve istatistiksel analiz aşamasında bu kimlik ve iletişim bilgileriniz verisetinden ayrılacak, kimliğiniz belirlenemeyecek şekilde "anonim" hale getirilecektir. Bilimsel makale, sunum veya istatistiklerde adınız, telefon numaranız veya sizi doğrudan tanımlayan bilgiler kullanılmayacaktır.</p>
+            <p>Bu formun bağlantısı, tercihen WhatsApp üzerinden size gönderilebilir. WhatsApp, yurt dışında hizmet veren bir uygulamadır ve mesajlaşma sırasında telefon numaranız bu hizmet kapsamında işlenebilir. İsterseniz bağlantının WhatsApp yerine SMS veya e‑posta gibi farklı yollarla gönderilmesini talep edebilirsiniz.</p>
+            <p>Verileriniz, sağlık mevzuatında öngörülen süreler boyunca saklanacak; bu sürelerin sonunda mevzuata uygun şekilde silinecek, yok edilecek veya anonim hale getirilecektir. Verilerinizin güvenliği için yetkisiz erişimi engelleyecek teknik ve idari tedbirler alınmaktadır.</p>
+            <p>6698 sayılı KVKK uyarınca; verilerinizin işlenip işlenmediğini öğrenme, işlenmişse bunlara erişme, düzeltilmesini veya silinmesini talep etme, işleme faaliyetlerine itiraz etme ve kanuna aykırı işlenmesi nedeniyle zarara uğrarsanız zararın giderilmesini isteme haklarına sahipsiniz. Bu haklar için "KVKK Kapsamında Bilgi Talebi" başlığı ile ismailduran33@gmail.com adresine e‑posta gönderebilirsiniz.</p>
+        </div>
+        <div id="kvkkOkunduEtiket" class="okundu-etiket">
+            Aydınlatma metni okundu.
+        </div>
+        <div id="kvkkUyari" class="kvkk-uyari">
+            Lütfen metni aşağıya kadar kaydırarak okuyunuz; onay kutusu ancak bundan sonra etkinleşecektir.
+        </div>
+    </div>
+
+    <div class="onam-cercevesi">
+        <span class="onam-baslik">Veri Kullanım ve Araştırma Onayı</span>
+        <p style="font-size: 0.85em; color: #555; margin-bottom: 15px;">
+            Aşağıdaki kutuyu işaretleyerek, bu formda verdiğiniz bilgilerin sağlık durumunuzun değerlendirilmesi ve kimliğiniz gizlenerek (anonimleştirilmiş şekilde) bilimsel çalışmalar kapsamında kullanılmasına, ayrıca form bağlantısının WhatsApp üzerinden size gönderilmesine onay vermiş olursunuz.
+        </p>
+        <label style="font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" id="onayKutusu" style="width: 22px; height: 22px;" disabled> 
+            Aydınlatma metnini okudum; bilgilerimin bu amaçlarla kullanılmasını onaylıyorum.
+        </label>
+    </div>
+
+    <button id="gonderBtn" onclick="submitForm()">Doktora Gönder</button>
+</div>
+
+<script>
+    const kvkkMetni = document.getElementById('kvkkMetni');
+    const kvkkOkunduEtiket = document.getElementById('kvkkOkunduEtiket');
+    const kvkkUyari = document.getElementById('kvkkUyari');
+    const onayKutusu = document.getElementById('onayKutusu');
+    const gonderBtn = document.getElementById('gonderBtn');
+
+    let kvkkOkundu = false;
+
+    // KVKK scroll kontrolü
+    kvkkMetni.addEventListener('scroll', function () {
+        const scrollTop = kvkkMetni.scrollTop;
+        const scrollHeight = kvkkMetni.scrollHeight;
+        const clientHeight = kvkkMetni.clientHeight;
+
+        if (!kvkkOkundu && scrollTop + clientHeight >= scrollHeight - 5) {
+            kvkkOkundu = true;
+            onayKutusu.disabled = false;
+            kvkkOkunduEtiket.style.display = 'block';
+            kvkkUyari.style.display = 'none';
+        }
+    });
+
+    // Onay kutusu değişimi
+    onayKutusu.addEventListener('change', function() {
+        if (this.checked) {
+            gonderBtn.classList.add('active');
+            gonderBtn.style.cursor = 'pointer';
+        } else {
+            gonderBtn.classList.remove('active');
+            gonderBtn.style.cursor = 'not-allowed';
+        }
+    });
+
+    function toggleBox(elementId, isChecked) {
+        document.getElementById(elementId).style.display = isChecked ? "block" : "none";
+    }
+
+    function handleSmoking(status) {
+        document.getElementById('box_active_smoker').style.display = 'none';
+        document.getElementById('box_ex_smoker').style.display = 'none';
+
+        if (status === 'active') {
+            document.getElementById('box_active_smoker').style.display = 'block';
+        } else if (status === 'ex') {
+            document.getElementById('box_ex_smoker').style.display = 'block';
+        }
+    }
+
+    function calculateBMI(h, w) {
+        if (!h || !w) return "?";
+        let h_m = h / 100;
+        let bmi = w / (h_m * h_m);
+        return bmi.toFixed(1);
+    }
+
+    function calculatePackYear() {
+        const amount = parseFloat(document.getElementById('smoke_amount').value) || 0;
+        const years = parseFloat(document.getElementById('smoke_years').value) || 0;
+        return ((amount / 20) * years).toFixed(1);
+    }
+
+    function calculateCCI() {
+        let score = 0;
+        let codes = [];
+        document.querySelectorAll('.cci-check:checked').forEach(cb => {
+            score += parseInt(cb.value);
+            codes.push(cb.getAttribute('data-code'));
+        });
+        const age = parseInt(document.getElementById('age').value) || 0;
+        if (age >= 50) score += 1; 
+        if (age >= 60) score += 1; 
+        if (age >= 70) score += 1; 
+        if (age >= 80) score += 1;
+        return { score: score, codes: codes };
+    }
+
+    function submitForm() {
+        if (!onayKutusu.checked) {
+            alert("Lütfen önce aydınlatma metnini okuyup onay veriniz.");
+            return;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const clinicianPhone = urlParams.get('phone');
+        if (!clinicianPhone) { 
+            alert("Hata: Numara bulunamadı."); 
+            return; 
+        }
+
+        const age = document.getElementById('age').value;
+        const gender = document.getElementById('gender').value;
+        const blood = document.getElementById('blood_type').value || "-";
+        const bmi = calculateBMI(document.getElementById('height').value, document.getElementById('weight').value);
+
+        let smokingMsg = "Yok";
+        const smokingStatus = document.querySelector('input[name="smoking_status"]:checked').value;
+        
+        if (smokingStatus === 'active') {
+            const py = calculatePackYear();
+            smokingMsg = `AKTİF (${py} P/Y)`;
+        } else if (smokingStatus === 'ex') {
+            const quitTime = document.getElementById('quit_time').value || "Belirtilmedi";
+            smokingMsg = `BIRAKMIŞ (${quitTime})`;
+        } else {
+            smokingMsg = "Hiç Kullanmadı";
+        }
+
+        const alcohol = document.getElementById('alcohol').value;
+
+        let meds = document.getElementById('check_meds').checked ? (document.getElementById('meds_text').value || "Belirtilmedi") : "Yok";
+        let surgs = document.getElementById('check_surg').checked ? (document.getElementById('surg_text').value || "Belirtilmedi") : "Yok";
+
+        let allergies = [];
+        if (document.getElementById('check_allergy').checked) {
+            if(document.getElementById('alg_drug').checked) allergies.push("İLAÇ");
+            if(document.getElementById('alg_metal').checked) allergies.push("METAL");
+            if(document.getElementById('alg_other').checked) allergies.push("DİĞER");
+            const detail = document.getElementById('allergy_detail').value;
+            if(detail) allergies.push(`(${detail})`);
+        }
+        const allergyText = allergies.length > 0 ? allergies.join(" ") : "Yok";
+
+        const cciData = calculateCCI();
+
+        let msg = `*ANAMNEZ ÖZETİ*\n`;
+        msg += `Hasta: ${age}y / ${gender}\n`;
+        msg += `Kan: ${blood}\n`;
+        msg += `BMI: ${bmi}\n`;
+        msg += `------------------\n`;
+        msg += `Sigara: ${smokingMsg}\n`;
+        msg += `Alkol: ${alcohol}\n`;
+        msg += `------------------\n`;
+        msg += `İLAÇ: ${meds}\n`;
+        msg += `OP: ${surgs}\n`;
+        msg += `ALERJİ: ${allergyText}\n`;
+        msg += `------------------\n`;
+        msg += `Komorbid: ${cciData.codes.join(', ') || 'Yok'}\n`;
+        msg += `*CCI SKOR: ${cciData.score}*\n\n`;
+        msg += `(Bu form, aydınlatma metni okunup bilimsel ve klinik kullanım için onam verilerek doldurulmuştur.)`;
+
+        window.location.href = `https://wa.me/${clinicianPhone}?text=${encodeURIComponent(msg)}`;
+    }
+</script>
+
+</body>
+</html>
