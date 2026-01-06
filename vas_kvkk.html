@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAS Ağrı Skoru</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f8f9fa;
+            color: #212529;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 25px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        h1, h2 {
+            color: #0056b3;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.5em;
+            margin-top: 30px;
+        }
+        .section {
+            margin-bottom: 25px;
+            background-color: #fdfdfd;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+        }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #495057; }
+        .form-group input[type="text"] { width: 100%; padding: 10px; font-size: 1em; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; }
+        
+        .question-group { margin-bottom: 20px; }
+        .question { font-weight: bold; color: #343a40; margin-bottom: 10px; font-size: 1.2em; }
+        .option { margin-bottom: 5px; cursor: pointer; padding-left: 5px; display: inline-block; margin: 5px; }
+        .option input[type="radio"] { margin-right: 5px; }
+        .option label { cursor: pointer; display: inline; font-size: 1.1em; padding: 5px 10px; border: 1px solid #ced4da; border-radius: 4px; }
+        .option input[type="radio"]:checked + label { background-color: #007bff; color: white; border-color: #007bff; }
+        
+        .note { font-size: 0.9em; color: #6c757d; background-color: #f1f3f5; padding: 10px; border-radius: 4px; border-left: 3px solid #0056b3; margin-bottom: 15px; }
+        .scale-labels { display: flex; justify-content: space-between; font-size: 1em; color: #495057; padding: 10px 5px; font-weight: bold; }
+
+        /* KVKK KUTUSU */
+        .kvkk-kapsayici {
+            margin-top: 25px;
+            margin-bottom: 15px;
+            border: 2px solid #0056b3;
+            border-radius: 10px;
+            padding: 10px;
+            background: #f8faff;
+        }
+        .kvkk-baslik {
+            font-weight: bold;
+            color: #0056b3;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        .kvkk-metin {
+            max-height: 180px;
+            overflow-y: auto;
+            font-size: 0.8em;
+            padding: 10px;
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid #d0e3ff;
+        }
+        .kvkk-uyari {
+            font-size: 0.8em;
+            color: #b02a37;
+            margin-top: 6px;
+        }
+        .okundu-etiket {
+            font-size: 0.75em;
+            color: #198754;
+            display: none;
+            margin-top: 4px;
+        }
+
+        /* ONAY KUTUSU */
+        .onam-cercevesi { 
+            background: #fff9db; 
+            border: 2px solid #fab005; 
+            padding: 20px; 
+            border-radius: 12px; 
+            margin: 15px 0 30px 0; 
+        }
+        .onam-baslik { 
+            font-weight: bold; 
+            color: #856404; 
+            display: block; 
+            margin-bottom: 10px; 
+        }
+        
+        button { display: block; width: 100%; padding: 15px; font-size: 1.2em; font-weight: bold; color: #ffffff; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease; }
+        #calculateButton { background-color: #007bff; }
+        #calculateButton:hover { background-color: #0056b3; }
+        
+        #sendToDoctorButton { 
+            background-color: #6c757d; 
+            margin-top: 15px; 
+            display: none;
+            cursor: not-allowed;
+        }
+        #sendToDoctorButton.active {
+            background-color: #25D366;
+            cursor: pointer;
+        }
+        #sendToDoctorButton.active:hover { 
+            background-color: #128C7E; 
+        }
+        
+        #results {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e6f7ff;
+            border: 1px solid #b3e0ff;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+        #results h2 { margin-top: 0; font-size: 1.8em; }
+        #results p { font-size: 1.3em; font-weight: bold; color: #004085; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>VAS (Görsel Analog Skala) Ağrı Skoru</h1>
+        <p class="note">Lütfen şu anki ağrı seviyenizi en iyi tanımlayan numarayı seçin.</p>
+
+        <form id="vasForm" onsubmit="return false;">
+
+            <div class="section">
+                <h2>Hasta Bilgileri</h2>
+                <div class="form-group">
+                    <label for="hasta_adi">Adınız:</label>
+                    <input type="text" id="hasta_adi" name="hasta_adi" required>
+                </div>
+                <div class="form-group">
+                    <label for="hasta_soyadi">Soyadınız:</label>
+                    <input type="text" id="hasta_soyadi" name="hasta_soyadi" required>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Ağrı Seviyesi</h2>
+                
+                <div class="question-group">
+                    <div class="question">Lütfen şu anki ağrınızı 0 ile 10 arasında derecelendirin:</div>
+                    <div class="scale-labels">
+                        <span>(0) Hiç Ağrı Yok</span>
+                        <span>(10) Dayanılmaz Ağrı</span>
+                    </div>
+                    <div style="text-align: center;">
+                        <div class="option">
+                            <input type="radio" id="vas0" name="vas" value="0"><label for="vas0">0</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="vas1" name="vas" value="1"><label for="vas1">1</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="vas2" name="vas" value="2"><label for="vas2">2</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="vas3" name="vas" value="3"><label for="vas3">3</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="vas4" name="vas" value="4"><label for="vas4">4</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="vas5" name="vas" value="5"><label for="vas5">5</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="vas6" name="vas" value="6"><label for="vas6">6</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="vas7" name="vas" value="7"><label for="vas7">7</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="vas8" name="vas" value="8"><label for="vas8">8</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="vas9" name="vas" value="9"><label for="vas9">9</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="vas10" name="vas" value="10"><label for="vas10">10</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KVKK METNİ -->
+            <div class="kvkk-kapsayici">
+                <div class="kvkk-baslik">Kişisel Verileriniz Hakkında Bilgilendirme (KVKK)</div>
+                <div id="kvkkMetni" class="kvkk-metin">
+                    <p><strong>Veri Sorumlusu:</strong> Op. Dr. İsmail Duran, Kartal Şehir Hastanesi Ortopedi Birimi, İstanbul. İletişim: +90 854 304 94 35, e‑posta: ismailduran33@gmail.com</p>
+                    <p>Bu formda paylaştığınız bilgiler, ağrı seviyenizin değerlendirilmesi, tedavi sürecinizin planlanması ve sonuçların takibi amacıyla kullanılacaktır. Verdiğiniz ağrı skoru, durumunuzun objektif olarak değerlendirilmesini ve tedavi etkinliğinin ölçülmesini sağlar.</p>
+                    <p>Ad‑soyad, yaş, cinsiyet, telefon gibi kimlik ve iletişim bilgileriniz, sadece sizinle iletişim kurmak ve sonuçlarınızı doktorunuza iletmek için kullanılacaktır. Bilimsel çalışma ve istatistiksel analiz aşamasında bu kimlik ve iletişim bilgileriniz verisetinden ayrılacak, kimliğiniz belirlenemeyecek şekilde "anonim" hale getirilecektir. Bilimsel makale, sunum veya istatistiklerde adınız, telefon numaranız veya sizi doğrudan tanımlayan bilgiler kullanılmayacaktır.</p>
+                    <p>Bu formun bağlantısı, tercihen WhatsApp üzerinden size gönderilebilir. WhatsApp, yurt dışında hizmet veren bir uygulamadır ve mesajlaşma sırasında telefon numaranız bu hizmet kapsamında işlenebilir. İsterseniz bağlantının WhatsApp yerine SMS veya e‑posta gibi farklı yollarla gönderilmesini talep edebilirsiniz.</p>
+                    <p>Verileriniz, sağlık mevzuatında öngörülen süreler boyunca saklanacak; bu sürelerin sonunda mevzuata uygun şekilde silinecek, yok edilecek veya anonim hale getirilecektir. Verilerinizin güvenliği için yetkisiz erişimi engelleyecek teknik ve idari tedbirler alınmaktadır.</p>
+                    <p>6698 sayılı KVKK uyarınca; verilerinizin işlenip işlenmediğini öğrenme, işlenmişse bunlara erişme, düzeltilmesini veya silinmesini talep etme, işleme faaliyetlerine itiraz etme ve kanuna aykırı işlenmesi nedeniyle zarara uğrarsanız zararın giderilmesini isteme haklarına sahipsiniz. Bu haklar için "KVKK Kapsamında Bilgi Talebi" başlığı ile ismailduran33@gmail.com adresine e‑posta gönderebilirsiniz.</p>
+                </div>
+                <div id="kvkkOkunduEtiket" class="okundu-etiket">
+                    Aydınlatma metni okundu.
+                </div>
+                <div id="kvkkUyari" class="kvkk-uyari">
+                    Lütfen metni aşağıya kadar kaydırarak okuyunuz; onay kutusu ancak bundan sonra etkinleşecektir.
+                </div>
+            </div>
+
+            <div class="onam-cercevesi">
+                <span class="onam-baslik">Veri Kullanım ve Araştırma Onayı</span>
+                <p style="font-size: 0.85em; color: #555; margin-bottom: 15px;">
+                    Aşağıdaki kutuyu işaretleyerek, bu formda verdiğiniz bilgilerin ağrı seviyenizin değerlendirilmesi ve kimliğiniz gizlenerek (anonimleştirilmiş şekilde) bilimsel çalışmalar kapsamında kullanılmasına, ayrıca form bağlantısının WhatsApp üzerinden size gönderilmesine onay vermiş olursunuz.
+                </p>
+                <label style="font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="onayKutusu" style="width: 22px; height: 22px;" disabled> 
+                    Aydınlatma metnini okudum; bilgilerimin bu amaçlarla kullanılmasını onaylıyorum.
+                </label>
+            </div>
+
+            <button type="button" id="calculateButton" onclick="calculateVAS()">SKORU GÖSTER</button>
+
+            <div id="results">
+                <h2>VAS Ağrı Skoru</h2>
+                <p id="totalScore">Toplam Puan: 0 / 10</p>
+                
+                <button type="button" id="sendToDoctorButton" onclick="sendResultsToDoctor()">
+                    Sonucu Doktoruma WhatsApp ile Gönder
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const phoneFromURL = params.get('phone');
+        const DOKTORUN_TELEFON_NUMARASI = phoneFromURL;
+        
+        let finalScore = -1;
+
+        const kvkkMetni = document.getElementById('kvkkMetni');
+        const kvkkOkunduEtiket = document.getElementById('kvkkOkunduEtiket');
+        const kvkkUyari = document.getElementById('kvkkUyari');
+        const onayKutusu = document.getElementById('onayKutusu');
+        const gonderBtn = document.getElementById('sendToDoctorButton');
+
+        let kvkkOkundu = false;
+
+        // KVKK scroll kontrolü
+        kvkkMetni.addEventListener('scroll', function () {
+            const scrollTop = kvkkMetni.scrollTop;
+            const scrollHeight = kvkkMetni.scrollHeight;
+            const clientHeight = kvkkMetni.clientHeight;
+
+            if (!kvkkOkundu && scrollTop + clientHeight >= scrollHeight - 5) {
+                kvkkOkundu = true;
+                onayKutusu.disabled = false;
+                kvkkOkunduEtiket.style.display = 'block';
+                kvkkUyari.style.display = 'none';
+            }
+        });
+
+        // Onay kutusu değişimi
+        onayKutusu.addEventListener('change', function() {
+            if (this.checked) {
+                gonderBtn.classList.add('active');
+            } else {
+                gonderBtn.classList.remove('active');
+            }
+        });
+
+        function calculateVAS() {
+            const form = document.getElementById('vasForm');
+
+            function getRadioValue(name) {
+                const radios = form.elements[name];
+                if (!radios) return -1; 
+                for (let i = 0; i < radios.length; i++) {
+                    if (radios[i].checked) {
+                        return parseInt(radios[i].value, 10);
+                    }
+                }
+                return -1;
+            }
+
+            finalScore = getRadioValue('vas');
+
+            if (finalScore === -1) {
+                alert("Lütfen 0 ile 10 arasında bir puan seçin.");
+                return;
+            }
+
+            const resultsDiv = document.getElementById('results');
+            document.getElementById('totalScore').innerText = `Ağrı Skorunuz: ${finalScore} / 10`;
+            
+            resultsDiv.style.display = 'block';
+            gonderBtn.style.display = 'block';
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function getSelectedAnswerText(name) {
+            const form = document.getElementById('vasForm');
+            const radios = form.elements[name];
+            if (!radios) return "Soru bulunamadı";
+            
+            for (let i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    return radios[i].value; 
+                }
+            }
+            return "Cevaplanmadı";
+        }
+
+        function sendResultsToDoctor() {
+            if (!DOKTORUN_TELEFON_NUMARASI || DOKTORUN_TELEFON_NUMARASI.length < 12) {
+                alert("Form sahibi (doktor) kendi telefon numarasını koda eklememiş.");
+                return;
+            }
+
+            if (!onayKutusu.checked) {
+                alert("Lütfen önce aydınlatma metnini okuyup onay veriniz.");
+                return;
+            }
+
+            const form = document.getElementById('vasForm');
+            const hastaAdi = form.elements['hasta_adi'].value;
+            const hastaSoyadi = form.elements['hasta_soyadi'].value;
+            
+            if (!hastaAdi || !hastaSoyadi) {
+                alert("Lütfen sonuçları göndermeden önce Ad ve Soyad alanlarını doldurun.");
+                return;
+            }
+            
+            if (finalScore === -1) {
+                 alert("Lütfen önce skoru hesaplayın.");
+                return;
+            }
+
+            let message = `--- VAS Ağrı Skoru Sonucu ---\n\n`;
+            message += `Hasta Adı: *${hastaAdi} ${hastaSoyadi}*\n\n`;
+            message += `Seçilen Ağrı Skoru (0-10):\n`;
+            message += `*${finalScore} / 10*\n\n`;
+            message += `(0=Hiç Ağrı Yok, 10=Dayanılmaz Ağrı)\n\n`;
+            message += `(Bu mesaj, aydınlatma metni okunup bilimsel ve klinik kullanım için onam verilerek gönderilmiştir.)`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappURL = `https://wa.me/${DOKTORUN_TELEFON_NUMARASI}?text=${encodedMessage}`;
+            
+            window.open(whatsappURL, '_blank');
+        }
+    </script>
+
+</body>
+</html>
