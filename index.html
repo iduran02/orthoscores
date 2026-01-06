@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klinik Skor Gönderme Merkezi</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f8f9fa;
+            color: #212529;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        h1 {
+            color: #0056b3;
+            text-align: center;
+        }
+        h2 {
+            font-size: 1.3em;
+            color: #343a40;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-top: 25px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #495057;
+        }
+        .form-group input[type="tel"],
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1em;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+        }
+        .clinician-input {
+            background-color: #e6f7ff;
+            border-color: #007bff;
+        }
+        .score-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .score-item {
+            background-color: #fdfdfd;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .score-item:hover {
+            background-color: #f1f3f5;
+        }
+        .score-item input[type="checkbox"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+        .score-item label {
+            font-size: 1em;
+            color: #212529;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: #25D366;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 25px;
+        }
+        button:hover {
+            background-color: #128C7E;
+        }
+        .note {
+            font-size: 0.9em;
+            color: #6c757d;
+            background-color: #fff9e6;
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 3px solid #ffc107;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>📋 Hastaya Skor Formları Gönder</h1>
+        
+        <div class="note">
+            <strong>ℹ️ Not:</strong> Tüm formlar KVKK uyumlu aydınlatma metni ve onay sistemi ile donatılmıştır.
+        </div>
+
+        <h2>Adım 1: Hasta Bilgileri</h2>
+        <div class="form-group">
+            <label for="hasta_adi">Hastanın Adı (İsteğe bağlı):</label>
+            <input type="text" id="hasta_adi" placeholder="Örn: Ahmet Yılmaz">
+        </div>
+        <div class="form-group">
+            <label for="hasta_telefon">Hastanın WhatsApp Numarası:</label>
+            <input type="tel" id="hasta_telefon" placeholder="Örn: 5xxxxxxxxx" required>
+        </div>
+
+        <h2>Adım 2: Sizin (Klinisyenin) Numaranız</h2>
+        <div class="form-group">
+            <label for="clinician_phone">Sonuçların Gönderileceği Numara:</label>
+            <input type="tel" id="clinician_phone" class="clinician-input" value="" placeholder="905xxxxxxxxx (Zorunlu)" required>
+        </div>
+
+        <h2>Adım 3: Gönderilecek Formları Seçin</h2>
+        <div class="score-list">
+            <div class="score-item" style="background-color: #e8f0fe; border-color: #4285f4;">
+                <input type="checkbox" id="score_anamnez" value="anamnez_kvkk.html" data-name="Genel Anamnez Formu">
+                <label for="score_anamnez">
+                    <strong>Genel Anamnez & Kayıt</strong>
+                    <br>
+                    <span style="font-size:0.85em; color:#555;">(Kimlik, BMI, CCI)</span>
+                </label>
+            </div>
+            
+            <div class="score-item">
+                <input type="checkbox" id="score_oxford_hip" value="oxford_hip_kvkk.html" data-name="Oxford Hip Score">
+                <label for="score_oxford_hip">
+                    <strong>Oxford Hip Score</strong>
+                    <br>
+                    <span style="font-size:0.85em; color:#555;">(Kalça - 12 soru)</span>
+                </label>
+            </div>
+
+            <div class="score-item">
+                <input type="checkbox" id="score_hoos" value="hoos_kvkk.html" data-name="HOOS Kalça Skoru">
+                <label for="score_hoos">
+                    <strong>HOOS</strong>
+                    <br>
+                    <span style="font-size:0.85em; color:#555;">(Kalça - 40 soru)</span>
+                </label>
+            </div>
+
+            <div class="score-item">
+                <input type="checkbox" id="score_womac" value="womac_kvkk.html" data-name="WOMAC">
+                <label for="score_womac">
+                    <strong>WOMAC</strong>
+                    <br>
+                    <span style="font-size:0.85em; color:#555;">(Diz/Kalça - 24 soru)</span>
+                </label>
+            </div>
+
+            <div class="score-item">
+                <input type="checkbox" id="score_vas" value="vas_kvkk.html" data-name="VAS Ağrı Skoru">
+                <label for="score_vas">
+                    <strong>VAS Ağrı Skoru</strong>
+                    <br>
+                    <span style="font-size:0.85em; color:#555;">(0-10 ağrı)</span>
+                </label>
+            </div>
+        </div>
+
+        <h2>Adım 4: Ek Kaynaklar (İsteğe bağlı)</h2>
+        <div class="form-group">
+            <label for="custom_links">Özel Linkler (YouTube, Egzersiz Kılavuzu vb.):</label>
+            <textarea id="custom_links" rows="4" placeholder="Hastaya göndermek istediğiniz ek linkleri buraya yapıştırın..."></textarea>
+        </div>
+        
+        <button type="button" onclick="sendFormLinks()">📤 Seçilenleri WhatsApp ile Gönder</button>
+    </div>
+
+    <script>
+        // ⚠️ ÖNEMLİ: Buraya kendi yeni GitHub repo adresinizi yazın
+        const REPO_BASE_URL = "https://KULLANICI_ADINIZ.github.io/orthoscores/";
+
+        function formatPhoneNumber(phone) {
+            if (!phone) return null;
+            phone = phone.replace(/\s/g, '');
+            if (phone.startsWith('0')) {
+                phone = phone.substring(1);
+            }
+            if (!phone.startsWith('90')) {
+                phone = '90' + phone;
+            }
+            return phone;
+        }
+
+        function sendFormLinks() {
+            let patientPhone = document.getElementById('hasta_telefon').value;
+            const patientName = document.getElementById('hasta_adi').value;
+            let clinicianPhone = document.getElementById('clinician_phone').value;
+
+            patientPhone = formatPhoneNumber(patientPhone);
+            clinicianPhone = formatPhoneNumber(clinicianPhone);
+
+            if (!patientPhone) {
+                alert("Lütfen HASTANIN telefon numarasını girin.");
+                return;
+            }
+            if (!clinicianPhone) {
+                alert("Lütfen SONUÇLARIN GÖNDERİLECEĞİ klinisyen numarasını girin.");
+                return;
+            }
+
+            const selectedScores = [];
+            const checkboxes = document.querySelectorAll('.score-list input[type="checkbox"]:checked');
+            
+            checkboxes.forEach(cb => {
+                const urlWithParam = `${REPO_BASE_URL}${cb.value}?phone=${clinicianPhone}`;
+                selectedScores.push({
+                    name: cb.dataset.name,
+                    url: urlWithParam
+                });
+            });
+
+            const customLinks = document.getElementById('custom_links').value.trim();
+
+            if (checkboxes.length === 0 && customLinks === "") {
+                alert("Lütfen göndermek için en az bir form VEYA bir özel link girin.");
+                return;
+            }
+
+            let message = "";
+            if (patientName) {
+                message = `Merhaba ${patientName} Hanım/Bey,\n\n`;
+            } else {
+                message = `Merhaba,\n\n`;
+            }
+            
+            if (checkboxes.length > 0) {
+                message += `Durumunuzu değerlendirmek için lütfen aşağıdaki formu/formları doldurunuz:\n\n`;
+                selectedScores.forEach(score => {
+                    message += `*${score.name}*:\n${score.url}\n\n`;
+                });
+            }
+
+            if (customLinks !== "") {
+                if (checkboxes.length > 0) {
+                    message += `---\n\n`;
+                }
+                message += `Ayrıca, sizin için seçtiğim kaynakları inceleyebilirsiniz:\n${customLinks}\n\n`;
+            }
+
+            message += `Sağlıklı günler dilerim.`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappURL = `https://wa.me/${patientPhone}?text=${encodedMessage}`;
+            
+            window.open(whatsappURL, '_blank');
+        }
+    </script>
+
+</body>
+</html>
